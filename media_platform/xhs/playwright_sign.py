@@ -21,10 +21,12 @@
 import hashlib
 import json
 import time
+import platform
 from typing import Any, Dict, Optional, Union
 from urllib.parse import urlparse, quote
 
 from playwright.async_api import Page
+import asyncio
 
 from .xhs_sign import b64_encode, encode_utf8, get_trace_id, mrc
 
@@ -56,7 +58,8 @@ def _build_sign_string(uri: str, data: Optional[Union[Dict, str]] = None, method
 
         if isinstance(data, dict):
             params = []
-            for key in data.keys():
+            # sort keys to ensure deterministic signing for GET
+            for key in sorted(data.keys()):
                 value = data[key]
                 if isinstance(value, list):
                     value_str = ",".join(str(v) for v in value)
@@ -81,10 +84,11 @@ def _md5_hex(s: str) -> str:
 
 def _build_xs_payload(x3_value: str, data_type: str = "object") -> str:
     """Build x-s signature"""
+    os_name = "Windows" if platform.system() == "Windows" else "Mac OS"
     s = {
         "x0": "4.2.1",
         "x1": "xhs-pc-web",
-        "x2": "Mac OS",
+        "x2": os_name,
         "x3": x3_value,
         "x4": data_type,
     }
@@ -93,12 +97,13 @@ def _build_xs_payload(x3_value: str, data_type: str = "object") -> str:
 
 def _build_xs_common(a1: str, b1: str, x_s: str, x_t: str) -> str:
     """Build x-s-common request header"""
+    os_name = "Windows" if platform.system() == "Windows" else "Mac OS"
     payload = {
         "s0": 3,
         "s1": "",
         "x0": "1",
         "x1": "4.2.2",
-        "x2": "Mac OS",
+        "x2": os_name,
         "x3": "xhs-pc-web",
         "x4": "4.74.0",
         "x5": a1,
@@ -115,8 +120,13 @@ def _build_xs_common(a1: str, b1: str, x_s: str, x_t: str) -> str:
 async def get_b1_from_localstorage(page: Page) -> str:
     """Get b1 value from localStorage"""
     try:
-        local_storage = await page.evaluate("() => window.localStorage")
-        return local_storage.get("b1", "")
+        for _ in range(8):
+            local_storage = await page.evaluate("() => window.localStorage")
+            b1 = local_storage.get("b1", "")
+            if b1:
+                return b1
+            await asyncio.sleep(0.25)
+        return ""
     except Exception:
         return ""
 

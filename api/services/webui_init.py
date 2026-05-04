@@ -34,13 +34,13 @@ _XHS_NOTE_MAPPING = [
 _WECHAT_ARTICLE_MAPPING = [
     ("article_id",       "文章ID",     True,  "text"),
     ("title",            "标题",       True,  "text"),
-    ("digest",           "摘要",       True,  "text"),
-    ("account_nickname", "公众号",     True,  "text"),
+    ("digest",           "内容摘要",   True,  "text"),
+    ("account_nickname", "公众号名称", True,  "text"),
     ("author_name",      "作者",       True,  "text"),
-    ("item_show_type",   "文章类型",   True,  "single_select"),
+    ("item_show_type",   "类型",       True,  "single_select"),
     ("create_time_str",  "发布时间",   True,  "text"),
     ("link",             "文章链接",   True,  "url"),
-    ("image_list",       "文章图片",   True,  "attachment"),
+    ("image_list",       "图片",       True,  "attachment"),
     ("fakeid",           "公众号ID",   False, "text"),
     ("source_keyword",   "来源关键词", False, "text"),
 ]

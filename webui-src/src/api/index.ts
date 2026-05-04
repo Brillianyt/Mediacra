@@ -19,13 +19,21 @@ http.interceptors.response.use(
     return response
   },
   (error: AxiosError<{ detail?: string }>) => {
-    // Detect "DB not configured" 400 response and attach a flag
-    if (error.response?.status === 400) {
-      const detail = error.response.data?.detail || ''
-      if (detail.includes(DB_NOT_CONFIGURED_MSG)) {
-        const err = new Error('当前存储模式为 CSV/JSON，此功能需要数据库。请前往「配置管理」切换到 DB 模式。') as Error & { isDbNotConfigured: boolean }
-        err.isDbNotConfigured = true
-        return Promise.reject(err)
+    const detail = error.response?.data?.detail
+
+    if (typeof detail === 'string' && detail.includes(DB_NOT_CONFIGURED_MSG)) {
+      const err = new Error('当前存储模式为 CSV/JSON，此功能需要数据库。请前往「配置管理」切换到 DB 模式。') as Error & { isDbNotConfigured: boolean }
+      err.isDbNotConfigured = true
+      return Promise.reject(err)
+    }
+
+    if (typeof detail === 'string' && detail.trim()) {
+      try {
+        const parsed = JSON.parse(detail)
+        const message = parsed?.message || parsed?.detail || detail
+        return Promise.reject(new Error(message))
+      } catch {
+        return Promise.reject(new Error(detail))
       }
     }
     return Promise.reject(error)

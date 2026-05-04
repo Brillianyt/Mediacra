@@ -193,6 +193,7 @@ async def update_subscription(
 @router.delete("/{sub_id}")
 async def delete_subscription(sub_id: int, session: AsyncSession = Depends(get_db)):
     """取消订阅"""
+    await subscription_crawl_manager.remove(sub_id)
     deleted = await subscription_service.delete(session, sub_id)
     if not deleted:
         raise HTTPException(404, "订阅不存在")
@@ -218,15 +219,35 @@ async def trigger_crawl(sub_id: int, session: AsyncSession = Depends(get_db)):
 
     # 根据订阅信息构建采集配置
     crawl_config = sub.crawl_config or {}
+    
+    import config
+    configured_save_option = str(getattr(config, "SAVE_DATA_OPTION", "json") or "json").lower()
+    save_option = configured_save_option
+    if save_option == "mysql":
+        save_option = "db"
+    if save_option not in {"csv", "db", "json", "sqlite", "mongodb", "excel", "postgres"}:
+        save_option = "json"
+
+    from api.services.config_service import config_service
+    _global_headless_raw = config_service.get("HEADLESS", "false")
+    _global_headless = str(_global_headless_raw).strip().lower() in ("1", "true", "yes", "y", "on")
+    _requested_headless = crawl_config.get("headless", None)
+    if _requested_headless is None:
+        _headless = _global_headless
+    elif isinstance(_requested_headless, bool):
+        _headless = _requested_headless
+    else:
+        _headless = str(_requested_headless).strip().lower() in ("1", "true", "yes", "y", "on")
+
     start_request = CrawlerStartRequest(
         platform=sub.platform,
         login_type=crawl_config.get("login_type", "cookie"),
         crawler_type="creator",
         creator_ids=sub.creator_id,
-        save_option=crawl_config.get("save_option", "json"),
+        save_option=save_option,
         enable_comments=crawl_config.get("enable_comments", False),
         enable_sub_comments=crawl_config.get("enable_sub_comments", False),
-        headless=crawl_config.get("headless", True),
+        headless=_headless,
     )
 
     started = await crawler_manager.start(start_request)

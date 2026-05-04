@@ -393,13 +393,24 @@ class SchedulerService:
                         if sub.crawl_config:
                             crawl_config.update(sub.crawl_config)
 
+                        from api.services.config_service import config_service
+                        _global_headless_raw = config_service.get("HEADLESS", "false")
+                        _global_headless = str(_global_headless_raw).strip().lower() in ("1", "true", "yes", "y", "on")
+                        _requested_headless = crawl_config.get("headless", None)
+                        if _requested_headless is None:
+                            _headless = _global_headless
+                        elif isinstance(_requested_headless, bool):
+                            _headless = _requested_headless
+                        else:
+                            _headless = str(_requested_headless).strip().lower() in ("1", "true", "yes", "y", "on")
+
                         start_request = CrawlerStartRequest(
                             platform=sub.platform,
                             login_type=crawl_config.get("login_type", "cookie"),
                             crawler_type="creator",
                             creator_ids=sub.creator_id,
                             save_option=crawl_config.get("save_option", "json"),
-                            headless=crawl_config.get("headless", True),
+                            headless=_headless,
                         )
 
                         started = await crawler_manager.start(start_request)
@@ -440,7 +451,9 @@ class SchedulerService:
                     keywords=task_config.get("keywords", ""),
                     creator_ids=task_config.get("creator_ids", ""),
                     save_option=task_config.get("save_option", "json"),
-                    headless=task_config.get("headless", True),
+                    headless=(lambda _v: (_v if isinstance(_v, bool) else str(_v).strip().lower() in ("1","true","yes","y","on")))(
+                        task_config.get("headless", __import__("api.services.config_service", fromlist=["config_service"]).config_service.get("HEADLESS", "false"))
+                    ),
                 )
                 started = await crawler_manager.start(request)
                 if not started:

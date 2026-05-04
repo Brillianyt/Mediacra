@@ -50,10 +50,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { NIcon } from 'naive-ui'
 import type { MenuOption } from 'naive-ui'
 import {
+  ListOutline,
   HomeOutline,
+  SparklesOutline,
   SettingsOutline,
   PeopleOutline,
   GridOutline,
+  LayersOutline,
   SwapHorizontalOutline,
   CloudUploadOutline,
   TimerOutline,
@@ -78,8 +81,11 @@ function renderIcon(icon: any) {
 const menuOptions: MenuOption[] = [
   { label: '仪表盘', key: 'Dashboard', icon: renderIcon(HomeOutline) },
   { label: '配置管理', key: 'ConfigManager', icon: renderIcon(SettingsOutline) },
+  { label: 'AI API 配置', key: 'AiApiConfig', icon: renderIcon(SparklesOutline) },
   { label: '订阅管理', key: 'Subscription', icon: renderIcon(PeopleOutline) },
   { label: '数据浏览', key: 'DataExplorer', icon: renderIcon(GridOutline) },
+  { label: '结构化数据', key: 'StructuredData', icon: renderIcon(LayersOutline) },
+  { label: '任务中心', key: 'TaskCenter', icon: renderIcon(ListOutline) },
   { label: '字段映射', key: 'FieldMapping', icon: renderIcon(SwapHorizontalOutline) },
   { label: '飞书同步', key: 'FeishuSync', icon: renderIcon(CloudUploadOutline) },
   { label: '任务调度', key: 'TaskScheduler', icon: renderIcon(TimerOutline) },

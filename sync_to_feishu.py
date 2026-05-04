@@ -620,7 +620,7 @@ def sync_file(
             flatten_sep=json_flatten_sep,
             batch_size=batch_size,
             attach_wechat_cover=(manager.platform == "wechat"),
-            wechat_cover_field_name="image",
+            wechat_cover_field_name="图片",
         )
 
     if ext in {".csv", ".json"} and (

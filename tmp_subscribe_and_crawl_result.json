@@ -1,0 +1,1165 @@
+{
+  "created": [
+    {
+      "id": 7,
+      "creator_name": "???",
+      "creator_id": "MzIzNjc1NzUzMw=="
+    },
+    {
+      "id": 8,
+      "creator_name": "Founder Park",
+      "creator_id": "Mzg5NTc0MjgwMw=="
+    },
+    {
+      "id": 9,
+      "creator_name": "36?",
+      "creator_id": "MzI2NDk5NzA0Mw=="
+    },
+    {
+      "id": 10,
+      "creator_name": "InfoQ",
+      "creator_id": "MjM5MDE0Mjc4MA=="
+    },
+    {
+      "id": 11,
+      "creator_name": "AI??",
+      "creator_id": "MzU1NDA4NjU2MA=="
+    }
+  ],
+  "existed": [],
+  "sub_ids": [
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "enqueue_result": {
+    "queued": [
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "skipped": []
+  },
+  "final_status": {
+    "running_sub_id": 7,
+    "queue_size": 3,
+    "items": [
+      {
+        "sub_id": 7,
+        "status": "running",
+        "message": "正在启动采集",
+        "updated_at": "2026-04-21T14:52:08"
+      },
+      {
+        "sub_id": 8,
+        "status": "queued",
+        "message": "已加入队列",
+        "updated_at": "2026-04-21T14:52:08"
+      },
+      {
+        "sub_id": 9,
+        "status": "queued",
+        "message": "已加入队列",
+        "updated_at": "2026-04-21T14:52:08"
+      },
+      {
+        "sub_id": 10,
+        "status": "queued",
+        "message": "已加入队列",
+        "updated_at": "2026-04-21T14:52:08"
+      },
+      {
+        "sub_id": 11,
+        "status": "queued",
+        "message": "已加入队列",
+        "updated_at": "2026-04-21T14:52:08"
+      }
+    ]
+  },
+  "history": [
+    {
+      "running_sub_id": 7,
+      "queue_size": 4,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    },
+    {
+      "running_sub_id": 7,
+      "queue_size": 3,
+      "items": [
+        {
+          "sub_id": 7,
+          "status": "running",
+          "message": "正在启动采集",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 8,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 9,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 10,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        },
+        {
+          "sub_id": 11,
+          "status": "queued",
+          "message": "已加入队列",
+          "updated_at": "2026-04-21T14:52:08"
+        }
+      ]
+    }
+  ]
+}

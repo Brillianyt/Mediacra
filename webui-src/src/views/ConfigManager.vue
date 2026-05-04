@@ -119,7 +119,7 @@ const historyColumns: DataTableColumn[] = [
 async function loadConfig() {
   loading.value = true
   try {
-    const { data } = await http.get('/config/groups')
+    const { data } = await http.get('/config/groups', { params: { exclude_keys: 'ai_text,ai_image' } })
     const payload = unwrapApiData<any>(data) || {}
     configGroups.value = payload.groups || []
     for (const group of configGroups.value) {

@@ -9,6 +9,7 @@
 
 import asyncio
 import os
+import re
 from typing import Dict, List, Optional
 
 from playwright.async_api import BrowserContext, BrowserType, Playwright
@@ -37,6 +38,7 @@ from tools.async_file_writer import AsyncFileWriter
 from store.wechat.wechat_store_media import WechatMediaStore
 from tools import utils
 from var import crawler_type_var
+from parsel import Selector
 
 
 class WeChatCrawler(AbstractCrawler):
@@ -52,6 +54,7 @@ class WeChatCrawler(AbstractCrawler):
     def __init__(self) -> None:
         self.client: Optional[WeChatClient] = None
         self.media_store: Optional[WechatMediaStore] = None
+        self._service_available: bool = False
         # 日期过滤：解析配置中的起止日期为时间戳
         self._date_start_ts: int = _parse_date_to_timestamp(config.WECHAT_ARTICLE_DATE_START)
         self._date_end_ts: int = _parse_date_to_timestamp(config.WECHAT_ARTICLE_DATE_END)
@@ -72,9 +75,14 @@ class WeChatCrawler(AbstractCrawler):
             utils.logger.info(
                 f"[WeChatCrawler] 正在连接 wechat-article-exporter: {config.WECHAT_API_BASE_URL}"
             )
-            if not await self.client.ping():
-                raise ServiceUnavailableError(config.WECHAT_API_BASE_URL)
-            utils.logger.info("[WeChatCrawler] 服务连接成功")
+            self._service_available = await self.client.ping()
+            if not self._service_available:
+                if config.CRAWLER_TYPE != "detail":
+                    raise ServiceUnavailableError(config.WECHAT_API_BASE_URL)
+                else:
+                    utils.logger.warning("[WeChatCrawler] 服务不可用，detail 模式将走离线降级路径")
+            else:
+                utils.logger.info("[WeChatCrawler] 服务连接成功")
 
             # 验证 auth-key（需要认证的模式）
             if config.CRAWLER_TYPE in ("search", "creator"):
@@ -573,8 +581,43 @@ class WeChatCrawler(AbstractCrawler):
         except Exception as e:
             utils.logger.error(f"[WeChatCrawler] 文章内容下载失败: {e}")
 
+        if not content:
+            raw_html = ""
+            try:
+                raw_html = await self.client.fetch_article_raw_html(article_url)
+            except Exception:
+                raw_html = ""
+            if raw_html:
+                desc, pic_urls = extract_image_share_data(raw_html)
+                text_share = extract_text_share_data(raw_html)
+                type_name = ""
+                if (pic_urls and len(pic_urls) > 0) or (desc and desc.strip()):
+                    type_name = "图片分享"
+                    content = build_fallback_markdown(title or aid, desc, pic_urls, type_name)
+                    image_urls = pic_urls[:]
+                elif text_share and text_share.strip():
+                    type_name = "文本分享"
+                    content = build_fallback_markdown(title or aid, text_share, [], type_name)
+                    image_urls = []
+                else:
+                    image_urls = extract_image_urls_from_html(raw_html)
+                    if image_urls:
+                        content = build_fallback_markdown(title or aid, "", image_urls, "图片分享")
+        # 1.1 解析标题兜底（detail 模式无列表元数据时）
+        if not title:
+            if download_format == "html" and content:
+                m = re.search(r'<h1[^>]*id="activity-name"[^>]*>\\s*<span[^>]*>(.*?)</span>', content, re.DOTALL)
+                if m:
+                    title = m.group(1).strip()
+            elif download_format == "markdown" and content:
+                first_line = content.splitlines()[0] if content.splitlines() else ""
+                if first_line.startswith("#"):
+                    title = first_line.lstrip("#").strip()
+            if not title:
+                title = aid
+
         # 2. 提取图片 URL 列表（需要 HTML 来提取）
-        image_urls: List[str] = []
+        image_urls: List[str] = locals().get("image_urls", [])
         html_for_images = ""
         if content:
             if download_format == "html":
@@ -582,17 +625,27 @@ class WeChatCrawler(AbstractCrawler):
             elif config.WECHAT_DOWNLOAD_IMAGES:
                 # 非 HTML 格式时，需要单独请求 HTML 来提取图片
                 try:
-                    html_for_images = await self.client.download_article(
-                        url=article_url, format="html"
-                    )
+                    if self._service_available:
+                        html_for_images = await self.client.download_article(url=article_url, format="html")
+                    else:
+                        html_for_images = await self.client.fetch_article_raw_html(article_url)
                 except Exception:
                     html_for_images = ""
             if html_for_images:
                 image_urls = extract_image_urls_from_html(html_for_images)
+                if (title == aid or (title or "").startswith("detail_")):
+                    sel2 = Selector(text=html_for_images)
+                    ttl2 = (sel2.css('h1#activity-name span::text').get() or title or aid).strip()
+                    acc2 = (sel2.css('#js_name::text').get() or "").strip()
+                    txt2 = (sel2.xpath('string(//div[@id=\"js_content\"])').get() or "").strip()
+                    dig2 = txt2[:120] if txt2 else ""
+                    title = ttl2 or title
+                    account_nickname = acc2 or account_nickname
+                    article_info = {**article_info, "digest": dig2 or article_info.get("digest", "")}
 
         # 3. 构建存储数据项（仅保留必要字段）
         local_db_item = self._build_article_store_item(
-            article_info=article_info,
+            article_info={**article_info, "title": title},
             account_nickname=account_nickname,
             fakeid=fakeid,
             content=content,
@@ -633,14 +686,33 @@ class WeChatCrawler(AbstractCrawler):
                     )
                     await update_wechat_article(local_db_item)
                 else:
-                    # 降级也失败：清空 content 避免存入 JS/CSS 垃圾
-                    local_db_item["content"] = ""
-                    await update_wechat_article(local_db_item)
-                    utils.logger.warning(
-                        f"[WeChatCrawler] 文章内容无实质文本，跳过保存: {title}"
-                        f" (类型={type_name})"
-                        f"\n  → 此类型的内容由 JS 动态渲染，降级提取亦失败"
+                    fb_imgs, fb_ok, new_title, fb_acc, fb_digest = await self._try_fallback_normal_article(
+                        article_url=article_url,
+                        title=title or aid,
+                        aid=aid,
+                        nickname=account_nickname,
                     )
+                    if fb_ok:
+                        if fb_imgs:
+                            image_urls = fb_imgs
+                            local_db_item["image_list"] = ",".join(fb_imgs)
+                        title = new_title or title
+                        local_db_item["title"] = title or aid
+                        if fb_acc:
+                            local_db_item["account_nickname"] = fb_acc
+                        if fb_digest:
+                            local_db_item["digest"] = fb_digest
+                        local_db_item["content"] = await self._read_saved_article_content(
+                            title=title or aid, aid=aid, nickname=account_nickname,
+                        )
+                        await update_wechat_article(local_db_item)
+                    else:
+                        local_db_item["content"] = ""
+                        await update_wechat_article(local_db_item)
+                        utils.logger.warning(
+                            f"[WeChatCrawler] 文章内容无实质文本，跳过保存: {title}"
+                            f" (类型={type_name})"
+                        )
 
         # 6. 下载文章中的图片（封面 + 正文图片）
         cover_url = article_info.get("cover", "")
@@ -654,6 +726,34 @@ class WeChatCrawler(AbstractCrawler):
                 nickname=account_nickname,
                 cover_url=cover_url,
             )
+
+    async def _try_fallback_normal_article(
+        self,
+        article_url: str,
+        title: str,
+        aid: str,
+        nickname: str,
+    ) -> tuple:
+        raw_html = await self.client.fetch_article_raw_html(article_url)
+        if not raw_html:
+            return [], False, title
+        sel = Selector(text=raw_html)
+        ttl = (sel.css('h1#activity-name span::text').get() or title or aid).strip()
+        text_content = (sel.xpath('string(//div[@id="js_content"])').get() or "").strip()
+        acc_name = (sel.css('#js_name::text').get() or "").strip()
+        pic_urls = extract_image_urls_from_html(raw_html)
+        if not text_content and not pic_urls:
+            return [], False, ttl
+        md = build_fallback_markdown(ttl, text_content, pic_urls, "普通图文")
+        await self._save_article_content(
+            content=md,
+            title=ttl or aid,
+            aid=aid,
+            nickname=nickname,
+            format="markdown",
+        )
+        digest = text_content[:120] if text_content else ""
+        return pic_urls, True, ttl, acc_name, digest
 
     async def _read_saved_article_content(self, title: str, aid: str, nickname: str) -> str:
         """读取降级保存的文章文件内容（用于回填 DB 的 content 字段）"""

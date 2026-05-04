@@ -15,6 +15,7 @@ from typing import Dict, List, Optional, Tuple
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.services.config_service import config_service
 from database.webui_models import SyncHistory
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -252,7 +253,7 @@ class FeishuService:
         platform = request.get("platform", "xhs")
         data_type = request.get("data_type", "note")
 
-        save_option = os.environ.get("SAVE_DATA_OPTION", "").strip().lower()
+        save_option = str(config_service.get("SAVE_DATA_OPTION", "") or "").strip().lower()
         if save_option == "mysql":
             save_option = "db"
 

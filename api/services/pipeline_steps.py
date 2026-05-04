@@ -48,6 +48,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, ClassVar, Dict, List, Optional, Type
 
+from api.services.config_service import config_service
+
 logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -173,7 +175,9 @@ class CrawlStep(PipelineStep):
             keywords=cfg.get("keywords", ""),
             creator_ids=cfg.get("creator_ids", ""),
             save_option=cfg.get("save_option", "json"),
-            headless=cfg.get("headless", True),
+            headless=(lambda _v: (_v if isinstance(_v, bool) else str(_v).strip().lower() in ("1","true","yes","y","on")))(
+                cfg.get("headless", __import__("api.services.config_service", fromlist=["config_service"]).config_service.get("HEADLESS", "false"))
+            ),
         )
         started = await crawler_manager.start(req)
         if not started:
@@ -268,7 +272,9 @@ class SubscriptionCrawlStep(PipelineStep):
                 crawler_type="creator",
                 creator_ids=sub.creator_id,
                 save_option=crawl_cfg.get("save_option", "json"),
-                headless=crawl_cfg.get("headless", True),
+                headless=(lambda _v: (_v if isinstance(_v, bool) else str(_v).strip().lower() in ("1","true","yes","y","on")))(
+                    crawl_cfg.get("headless", __import__("api.services.config_service", fromlist=["config_service"]).config_service.get("HEADLESS", "false"))
+                ),
             )
             started = await crawler_manager.start(req)
             if not started:
@@ -324,7 +330,7 @@ class FeishuPushStep(PipelineStep):
         cfg = self.config
         platform = cfg.get("platform") or ctx.platform
 
-        env_save = os.environ.get("SAVE_DATA_OPTION", "sqlite").strip().lower()
+        env_save = str(config_service.get("SAVE_DATA_OPTION", "sqlite") or "sqlite").strip().lower()
         db_type = (cfg.get("db_type") or env_save).lower()
         if db_type == "mysql":
             db_type = "db"

@@ -20,11 +20,11 @@
 import asyncio
 import json
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Union
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse, parse_qs
 
 import httpx
 from playwright.async_api import BrowserContext, Page
-from tenacity import retry, stop_after_attempt, wait_fixed
+from tenacity import retry, stop_after_attempt, wait_fixed, RetryError
 
 import config
 from base.base_crawler import AbstractApiClient
@@ -529,6 +529,14 @@ class XiaoHongShuClient(AbstractApiClient, ProxyRefreshMixin):
 
         """
         uri = f"/api/sns/web/v1/user_posted"
+        # sanitize xsec_source: listing endpoint expects feed/profile channel, not note
+        if not xsec_source or xsec_source.lower() not in {"pc_feed", "pc_profile", "pc_user"}:
+            xsec_source = "pc_feed"
+        # dynamic referer improves anti-bot consistency for listing API
+        referer = f"{self._domain}/user/profile/{creator}"
+        if xsec_token:
+            referer = f"{referer}?xsec_token={xsec_token}&xsec_source={xsec_source}"
+        self.headers["referer"] = referer
         params = {
             "num": page_size,
             "cursor": cursor,
@@ -537,6 +545,64 @@ class XiaoHongShuClient(AbstractApiClient, ProxyRefreshMixin):
             "xsec_source": xsec_source,
         }
         return await self.get(uri, params)
+
+    async def get_notes_by_creator_from_html(
+        self,
+        user_id: str,
+        max_count: int = 30,
+    ) -> List[Dict]:
+        await self.playwright_page.goto(f"{self._domain}/user/profile/{user_id}")
+        await asyncio.sleep(1)
+        collected = set()
+        notes = []
+        for _ in range(20):
+            hrefs = await self.playwright_page.evaluate(
+                "() => Array.from(document.querySelectorAll('a[href^=\"/explore/\"]')).map(a => a.href || a.getAttribute('href'))"
+            )
+            for h in hrefs or []:
+                if not h or h in collected:
+                    continue
+                collected.add(h)
+                try:
+                    u = urlparse(h)
+                    nid = u.path.split("/")[-1]
+                    qs = parse_qs(u.query)
+                    xt = (qs.get("xsec_token", [""])[0]) or ""
+                    xs = (qs.get("xsec_source", [""])[0]) or "pc_feed"
+                    if nid:
+                        notes.append({"note_id": nid, "xsec_token": xt, "xsec_source": xs})
+                        if len(notes) >= max_count:
+                            break
+                except Exception:
+                    continue
+            if len(notes) >= max_count:
+                break
+            await self.playwright_page.evaluate("window.scrollBy(0, document.body.scrollHeight);")
+            await asyncio.sleep(1)
+        if notes:
+            return notes
+        try:
+            html = await self.request("GET", f"{self._domain}/user/profile/{user_id}", return_response=True, headers=self.headers)
+            import re
+            ids = []
+            for m in re.finditer(r"/explore/([0-9a-zA-Z]{18,})", html):
+                nid = m.group(1)
+                if nid and nid not in collected:
+                    ids.append(nid)
+                    collected.add(nid)
+                if len(ids) >= max_count:
+                    break
+            if not ids:
+                for m in re.finditer(r'"noteId"\s*:\s*"([0-9a-zA-Z]{18,})"', html):
+                    nid = m.group(1)
+                    if nid and nid not in collected:
+                        ids.append(nid)
+                        collected.add(nid)
+                    if len(ids) >= max_count:
+                        break
+            return [{"note_id": nid, "xsec_token": "", "xsec_source": "pc_feed"} for nid in ids]
+        except Exception:
+            return notes
 
     async def get_all_notes_by_creator(
         self,
@@ -562,21 +628,30 @@ class XiaoHongShuClient(AbstractApiClient, ProxyRefreshMixin):
         notes_has_more = True
         notes_cursor = ""
         while notes_has_more and len(result) < config.CRAWLER_MAX_NOTES_COUNT:
-            notes_res = await self.get_notes_by_creator(
-                user_id, notes_cursor, xsec_token=xsec_token, xsec_source=xsec_source
-            )
-            if not notes_res:
-                utils.logger.error(
-                    f"[XiaoHongShuClient.get_notes_by_creator] The current creator may have been banned by xhs, so they cannot access the data."
+            try:
+                notes_res = await self.get_notes_by_creator(
+                    user_id,
+                    notes_cursor,
+                    xsec_token=xsec_token,
+                    xsec_source=("pc_feed" if not xsec_source or xsec_source.lower() == "pc_note" else xsec_source),
                 )
+            except (DataFetchError, RetryError):
+                alt_notes = await self.get_notes_by_creator_from_html(user_id, max_count=min(config.CRAWLER_MAX_NOTES_COUNT, 30))
+                if alt_notes:
+                    result.extend(alt_notes)
+                break
+            if not notes_res:
+                alt_notes = await self.get_notes_by_creator_from_html(user_id, max_count=min(config.CRAWLER_MAX_NOTES_COUNT, 30))
+                if alt_notes:
+                    result.extend(alt_notes)
                 break
 
             notes_has_more = notes_res.get("has_more", False)
             notes_cursor = notes_res.get("cursor", "")
             if "notes" not in notes_res:
-                utils.logger.info(
-                    f"[XiaoHongShuClient.get_all_notes_by_creator] No 'notes' key found in response: {notes_res}"
-                )
+                alt_notes = await self.get_notes_by_creator_from_html(user_id, max_count=min(config.CRAWLER_MAX_NOTES_COUNT - len(result), 30))
+                if alt_notes:
+                    result.extend(alt_notes)
                 break
 
             notes = notes_res["notes"]
@@ -598,6 +673,10 @@ class XiaoHongShuClient(AbstractApiClient, ProxyRefreshMixin):
         utils.logger.info(
             f"[XiaoHongShuClient.get_all_notes_by_creator] Finished getting notes for user {user_id}, total: {len(result)}"
         )
+        if not result:
+            alt_notes = await self.get_notes_by_creator_from_html(user_id, max_count=min(config.CRAWLER_MAX_NOTES_COUNT, 30))
+            if alt_notes:
+                result.extend(alt_notes)
         return result
 
     async def get_note_short_url(self, note_id: str) -> Dict:

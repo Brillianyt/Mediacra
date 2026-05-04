@@ -186,8 +186,10 @@ FEISHU_APP_SECRET=your_app_secret
 FEISHU_APP_TOKEN=your_app_token
 
 # AI处理配置（可选）
-OPENAI_API_KEY=your_openai_key
-AI_MODEL=gpt-3.5-turbo
+TEXT_AI_BASE_URL=https://api.openai.com/v1
+TEXT_AI_API_KEY=your_text_ai_key
+IMAGE_UNDERSTANDING_BASE_URL=https://api.openai.com/v1
+IMAGE_UNDERSTANDING_API_KEY=your_image_ai_key
 QUALITY_THRESHOLD=0.7
 ```
 

@@ -14,13 +14,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from api.schemas import CrawlerStartRequest
 from api.services.crawler_manager import crawler_manager
 from api.services.subscription_service import subscription_service
 from database.webui_models import SubscriptionCrawlStatus
-import config as _cfg
 
 
 @dataclass
@@ -176,6 +175,56 @@ class SubscriptionCrawlManager:
             ],
         }
 
+    async def remove(self, sub_id: int) -> dict:
+        """删除订阅时同步清理队列和持久化状态，避免残留任务影响 UI。"""
+        await self._restore_from_db()
+
+        removed_from_queue = False
+        removed_status = False
+        was_running = self._running_sub_id == sub_id
+
+        async with self._lock:
+            pending_ids: List[int] = []
+            while True:
+                try:
+                    queued_sub_id = self._queue.get_nowait()
+                except asyncio.QueueEmpty:
+                    break
+
+                if queued_sub_id == sub_id:
+                    removed_from_queue = True
+                    continue
+                pending_ids.append(queued_sub_id)
+
+            for queued_sub_id in pending_ids:
+                self._queue.put_nowait(queued_sub_id)
+
+            if sub_id in self._statuses:
+                self._statuses.pop(sub_id, None)
+                removed_status = True
+
+            if was_running:
+                self._running_sub_id = None
+
+        from database.db_session import get_session
+
+        try:
+            async with get_session() as session:
+                if session is not None:
+                    await session.execute(
+                        delete(SubscriptionCrawlStatus).where(
+                            SubscriptionCrawlStatus.subscription_id == sub_id
+                        )
+                    )
+        except Exception:
+            pass
+
+        return {
+            "removed_from_queue": removed_from_queue,
+            "removed_status": removed_status,
+            "was_running": was_running,
+        }
+
     async def _worker(self) -> None:
         """队列 worker：在 crawler 空闲时触发下一条订阅采集。"""
         while True:
@@ -263,12 +312,23 @@ class SubscriptionCrawlManager:
 
             crawl_config = sub.crawl_config or {}
 
-            configured_save_option = str(getattr(_cfg, "SAVE_DATA_OPTION", "json") or "json").lower()
+            from api.services.config_service import config_service
+
+            configured_save_option = str(config_service.get("SAVE_DATA_OPTION", "json") or "json").lower()
             save_option = configured_save_option
             if save_option == "mysql":
                 save_option = "db"
             if save_option not in {"csv", "db", "json", "sqlite", "mongodb", "excel", "postgres"}:
                 save_option = configured_save_option if configured_save_option in {"csv", "db", "json", "sqlite", "mongodb", "excel", "postgres"} else "json"
+            _global_headless_raw = config_service.get("HEADLESS", "false")
+            _global_headless = str(_global_headless_raw).strip().lower() in ("1", "true", "yes", "y", "on")
+            _requested_headless = crawl_config.get("headless", None)
+            if _requested_headless is None:
+                _headless = _global_headless
+            elif isinstance(_requested_headless, bool):
+                _headless = _requested_headless
+            else:
+                _headless = str(_requested_headless).strip().lower() in ("1", "true", "yes", "y", "on")
 
             start_request = CrawlerStartRequest(
                 platform=sub.platform,
@@ -278,7 +338,7 @@ class SubscriptionCrawlManager:
                 save_option=save_option,
                 enable_comments=crawl_config.get("enable_comments", False),
                 enable_sub_comments=crawl_config.get("enable_sub_comments", False),
-                headless=crawl_config.get("headless", True),
+                headless=_headless,
             )
 
             started = await crawler_manager.start(start_request)

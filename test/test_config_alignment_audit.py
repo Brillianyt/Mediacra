@@ -127,6 +127,7 @@ def _extract_router_output_fields() -> dict[str, set[str]]:
 
 def _write_report(report_lines: list[str]) -> None:
     report_path = ROOT / "docs" / "dev" / "WebUI" / "变量对齐差异报告.md"
+    report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text("\n".join(report_lines) + "\n", encoding="utf-8")
 
 

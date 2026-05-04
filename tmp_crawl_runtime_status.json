@@ -1,0 +1,46 @@
+{
+  "crawler_status": {
+    "status": "idle",
+    "platform": null,
+    "crawler_type": null,
+    "started_at": null,
+    "error_message": null
+  },
+  "queue_status": {
+    "running_sub_id": null,
+    "queue_size": 4,
+    "items": [
+      {
+        "sub_id": 7,
+        "status": "failed",
+        "message": "服务重启，采集任务中断",
+        "updated_at": "2026-04-21T14:53:44"
+      },
+      {
+        "sub_id": 8,
+        "status": "queued",
+        "message": "服务重启后恢复入队",
+        "updated_at": "2026-04-21T14:53:44"
+      },
+      {
+        "sub_id": 9,
+        "status": "queued",
+        "message": "服务重启后恢复入队",
+        "updated_at": "2026-04-21T14:53:44"
+      },
+      {
+        "sub_id": 10,
+        "status": "queued",
+        "message": "服务重启后恢复入队",
+        "updated_at": "2026-04-21T14:53:44"
+      },
+      {
+        "sub_id": 11,
+        "status": "queued",
+        "message": "服务重启后恢复入队",
+        "updated_at": "2026-04-21T14:53:44"
+      }
+    ]
+  },
+  "logs": []
+}

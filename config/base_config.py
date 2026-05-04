@@ -124,6 +124,15 @@ FONT_PATH = _env("FONT_PATH", "./docs/STZHONGS.TTF")
 # 爬取间隔时间
 CRAWLER_MAX_SLEEP_SEC = _env("CRAWLER_MAX_SLEEP_SEC", 2, int)
 
+# 登录等待时间（扫码登录最大等待秒数）
+XHS_LOGIN_QRCODE_WAIT_SECONDS = _env("XHS_LOGIN_QRCODE_WAIT_SECONDS", 600, int)
+
+# 登录成功后跳转等待秒数
+XHS_LOGIN_REDIRECT_WAIT_SECONDS = _env("XHS_LOGIN_REDIRECT_WAIT_SECONDS", 5, int)
+
+# 是否禁止交互式登录（用于完全跳过扫码/手机登录流程）
+DISABLE_INTERACTIVE_LOGIN = _env("DISABLE_INTERACTIVE_LOGIN", False, bool)
+
 # 平台 Cookie（可通过 WebUI 配置）
 XHS_COOKIES = _env("XHS_COOKIES", "")
 DY_COOKIES = _env("DY_COOKIES", "")
@@ -142,3 +151,4 @@ from .tieba_config import *
 from .zhihu_config import *
 from .wechat_config import *
 from .feishu_config import *
+ 

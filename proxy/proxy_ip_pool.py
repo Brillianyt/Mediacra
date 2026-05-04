@@ -149,10 +149,12 @@ class ProxyIpPool:
         await self.load_proxies()
 
 
-IpProxyProvider: Dict[str, ProxyProvider] = {
-    ProviderNameEnum.KUAI_DAILI_PROVIDER.value: new_kuai_daili_proxy(),
-    ProviderNameEnum.WANDOU_HTTP_PROVIDER.value: new_wandou_http_proxy(),
-}
+def get_proxy_provider(name: str) -> ProxyProvider:
+    if name == ProviderNameEnum.KUAI_DAILI_PROVIDER.value:
+        return new_kuai_daili_proxy()
+    elif name == ProviderNameEnum.WANDOU_HTTP_PROVIDER.value:
+        return new_wandou_http_proxy()
+    raise ValueError(f"Unknown proxy provider: {name}")
 
 
 async def create_ip_pool(ip_pool_count: int, enable_validate_ip: bool) -> ProxyIpPool:
@@ -165,7 +167,7 @@ async def create_ip_pool(ip_pool_count: int, enable_validate_ip: bool) -> ProxyI
     pool = ProxyIpPool(
         ip_pool_count=ip_pool_count,
         enable_validate_ip=enable_validate_ip,
-        ip_provider=IpProxyProvider.get(config.IP_PROXY_PROVIDER_NAME),
+        ip_provider=get_proxy_provider(config.IP_PROXY_PROVIDER_NAME),
     )
     await pool.load_proxies()
     return pool

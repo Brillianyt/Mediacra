@@ -22,6 +22,12 @@ const router = createRouter({
           meta: { title: '配置管理', icon: 'SettingsOutline' },
         },
         {
+          path: 'ai-config',
+          name: 'AiApiConfig',
+          component: () => import('@/views/AiApiConfig.vue'),
+          meta: { title: 'AI API 配置', icon: 'SparklesOutline' },
+        },
+        {
           path: 'subscription',
           name: 'Subscription',
           component: () => import('@/views/Subscription.vue'),
@@ -32,6 +38,18 @@ const router = createRouter({
           name: 'DataExplorer',
           component: () => import('@/views/DataExplorer.vue'),
           meta: { title: '数据浏览', icon: 'GridOutline' },
+        },
+        {
+          path: 'structured',
+          name: 'StructuredData',
+          component: () => import('@/views/StructuredData.vue'),
+          meta: { title: '结构化数据', icon: 'GridOutline' },
+        },
+        {
+          path: 'task-center',
+          name: 'TaskCenter',
+          component: () => import('@/views/TaskCenter.vue'),
+          meta: { title: '任务中心', icon: 'ListOutline' },
         },
         {
           path: 'mapping',

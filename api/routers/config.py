@@ -14,10 +14,36 @@ from config.config_meta import CONFIG_GROUPS, get_all_config_keys
 router = APIRouter(prefix="/config", tags=["配置管理"])
 
 
+def _get_allowed_update_keys() -> set[str]:
+    keys = set(get_all_config_keys()) | {"FEISHU_APP_TOKEN"}
+    # 兼容运行中的旧进程 / 渐进式配置演进，允许已存在于 .env 的键继续更新。
+    keys.update(config_service._read_env_file().keys())
+    keys.update({
+        "TEXT_AI_BASE_URL",
+        "TEXT_AI_MODEL",
+        "TEXT_AI_API_KEY",
+        "TEXT_AI_TIMEOUT",
+        "TEXT_AI_MAX_TOKENS",
+        "IMAGE_UNDERSTANDING_ENABLED",
+        "IMAGE_UNDERSTANDING_BASE_URL",
+        "IMAGE_UNDERSTANDING_MODEL",
+        "IMAGE_UNDERSTANDING_API_KEY",
+        "IMAGE_UNDERSTANDING_MAX_IMAGES",
+        "IMAGE_UNDERSTANDING_TIMEOUT",
+        "IMAGE_UNDERSTANDING_USE_LOCAL_FIRST",
+    })
+    return keys
+
+
 @router.get("/groups")
-async def get_config_groups():
+async def get_config_groups(
+    keys: Optional[str] = Query(None, description="逗号分隔的 group key 白名单"),
+    exclude_keys: Optional[str] = Query(None, description="逗号分隔的 group key 黑名单"),
+):
     """获取所有配置分组及其配置项（敏感值脱敏）"""
-    groups = config_service.get_all_groups()
+    include_list = [item.strip() for item in (keys or "").split(",") if item.strip()] or None
+    exclude_list = [item.strip() for item in (exclude_keys or "").split(",") if item.strip()] or None
+    groups = config_service.get_all_groups(include_keys=include_list, exclude_keys=exclude_list)
     return ok({"groups": groups})
 
 
@@ -69,7 +95,7 @@ async def update_configs(
     if not configs:
         return fail(400, "未提供任何配置项")
 
-    allowed_keys = set(get_all_config_keys()) | {"FEISHU_APP_TOKEN"}
+    allowed_keys = _get_allowed_update_keys()
     unknown_keys = sorted([k for k in configs.keys() if k not in allowed_keys])
     if unknown_keys:
         return fail(400, f"存在未知配置项: {', '.join(unknown_keys)}")
@@ -120,7 +146,6 @@ async def test_connection(body: dict):
     if conn_type in ("wechat_source", "wechat"):
         try:
             import httpx
-            from api.services.config_service import config_service
             env = config_service._read_env_file()
             url = (env.get("WECHAT_API_BASE_URL", "") or "").strip().rstrip("/")
             if not url:
@@ -178,6 +203,78 @@ async def test_connection(body: dict):
             return ok({"success": False, "error": "httpx 未安装"})
         except Exception as e:
             return ok({"success": False, "error": f"微信源连接失败: {e}"})
+
+    if conn_type in ("ai_text", "text_ai"):
+        from api.services.structured_runtime_service import call_llm_for_text
+
+        settings = config_service.resolve_text_ai_settings()
+        if not settings["api_key"]:
+            return ok({
+                "success": False,
+                "error": "文字 API Key 未配置，请先保存文字 API 配置",
+                "provider": settings["provider"],
+                "model": settings["model"],
+            })
+        text = call_llm_for_text(
+            '请输出 JSON：{"ok":true,"mode":"text"}',
+            "你是配置测试助手，只输出合法 JSON。",
+        )
+        if not text:
+            return ok({
+                "success": False,
+                "error": "文字模型未返回有效结果，请检查文字 API URL、API Key 或接口可用性",
+                "provider": settings["provider"],
+                "model": settings["model"],
+            })
+        return ok({
+            "success": True,
+            "message": "文字 API 调用成功",
+            "provider": settings["provider"],
+            "model": settings["model"],
+            "preview": text[:200],
+        })
+
+    if conn_type in ("ai_image", "image_ai"):
+        from api.services.structured_analysis_service import ImageUnderstandRequest
+        from api.services.structured_runtime_service import understand_images
+
+        settings = config_service.resolve_image_ai_settings()
+        if not settings["api_key"]:
+            return ok({
+                "success": False,
+                "error": "图片 API Key 未配置，请先保存图片 API 配置",
+                "provider": settings["provider"],
+                "model": settings["model"],
+            })
+        image_url = (body.get("image_url") or "https://httpbin.org/image/png").strip()
+        result = understand_images(ImageUnderstandRequest(
+            image_urls=[image_url],
+            image_captions=None,
+            fetch_and_embed=True,
+            max_images=1,
+        ))
+        error_message = str(result.get("image_understanding_error") or "").strip() if isinstance(result, dict) else ""
+        if not result or error_message:
+            return ok({
+                "success": False,
+                "error": error_message or "图片模型未返回有效结果，请检查图片 API URL、API Key 或模型视觉能力",
+                "provider": settings["provider"],
+                "model": settings["model"],
+                "vision_supported": bool(result.get("vision_supported")) if isinstance(result, dict) else False,
+                "used_local_image": bool(result.get("used_local_image")) if isinstance(result, dict) else False,
+                "image_fetch_succeeded": bool(result.get("image_fetch_succeeded")) if isinstance(result, dict) else False,
+                "result": result,
+            })
+        return ok({
+            "success": True,
+            "message": "图片 API 调用成功",
+            "provider": settings["provider"],
+            "model": settings["model"],
+            "vision_supported": bool(result.get("vision_supported")),
+            "used_local_image": bool(result.get("used_local_image")),
+            "image_fetch_succeeded": bool(result.get("image_fetch_succeeded")),
+            "result": result,
+        })
 
     return fail(400, f"暂不支持的连接类型: {conn_type}")
 

@@ -27,6 +27,7 @@ except ImportError:
 
 from .base_config import *
 from .db_config import *
+from .wechat_config import *
 
 
 def reload_from_env():

@@ -47,6 +47,14 @@ class BilibiliVideo(Base):
     video_cover_url = Column(Text)
     source_keyword = Column(Text, default='')
 
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
+
+
 class BilibiliVideoComment(Base):
     __tablename__ = 'bilibili_video_comment'
     id = Column(Integer, primary_key=True)
@@ -64,6 +72,14 @@ class BilibiliVideoComment(Base):
     sub_comment_count = Column(Text)
     parent_comment_id = Column(String(255))
     like_count = Column(Text, default='0')
+
+
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
 
 class BilibiliUpInfo(Base):
     __tablename__ = 'bilibili_up_info'
@@ -138,6 +154,14 @@ class DouyinAweme(Base):
     note_download_url = Column(Text)
     source_keyword = Column(Text, default='')
 
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
+
+
 class DouyinAwemeComment(Base):
     __tablename__ = 'douyin_aweme_comment'
     id = Column(Integer, primary_key=True)
@@ -159,6 +183,14 @@ class DouyinAwemeComment(Base):
     parent_comment_id = Column(String(255))
     like_count = Column(Text, default='0')
     pictures = Column(Text, default='')
+
+
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
 
 class DyCreator(Base):
     __tablename__ = 'dy_creator'
@@ -196,6 +228,14 @@ class KuaishouVideo(Base):
     video_play_url = Column(Text)
     source_keyword = Column(Text, default='')
 
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
+
+
 class KuaishouVideoComment(Base):
     __tablename__ = 'kuaishou_video_comment'
     id = Column(Integer, primary_key=True)
@@ -231,6 +271,14 @@ class WeiboNote(Base):
     note_url = Column(Text)
     source_keyword = Column(Text, default='')
 
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
+
+
 class WeiboNoteComment(Base):
     __tablename__ = 'weibo_note_comment'
     id = Column(Integer, primary_key=True)
@@ -250,6 +298,14 @@ class WeiboNoteComment(Base):
     comment_like_count = Column(Text)
     sub_comment_count = Column(Text)
     parent_comment_id = Column(String(255))
+
+
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
 
 class WeiboCreator(Base):
     __tablename__ = 'weibo_creator'
@@ -308,6 +364,14 @@ class XhsNote(Base):
     source_keyword = Column(Text, default='')
     xsec_token = Column(Text)
 
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
+
+
 class XhsNoteComment(Base):
     __tablename__ = 'xhs_note_comment'
     id = Column(Integer, primary_key=True)
@@ -346,6 +410,14 @@ class TiebaNote(Base):
     add_ts = Column(BigInteger)
     last_modify_ts = Column(BigInteger)
     source_keyword = Column(Text, default='')
+
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
+
 
 class TiebaComment(Base):
     __tablename__ = 'tieba_comment'
@@ -410,6 +482,14 @@ class ZhihuContent(Base):
     # Side effects: None
     # Rollback strategy: Restore this line
 
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
+
+
 class ZhihuComment(Base):
     __tablename__ = 'zhihu_comment'
     id = Column(Integer, primary_key=True)
@@ -472,6 +552,14 @@ class WechatArticle(Base):
     image_list = Column(Text, default='')             # 文章图片 URL 列表（逗号分隔）
     source_keyword = Column(Text, default='')
     add_ts = Column(String(32), default='')           # 入库时间 (YYYY-MM-DD HH:MM:SS)
+
+
+    # AI 增强字段
+    ai_status = Column(Integer, default=0)  # 0: 未处理, 1: 处理中, 2: 已完成, -1: 失败
+    ai_score = Column(Integer, default=0)   # 0-100 质量打分
+    ai_summary = Column(Text, default='')   # AI 摘要
+    ai_tags = Column(Text, default='')      # AI 提取标签
+    is_spam = Column(Integer, default=0)    # 0: 正常, 1: 垃圾/广告
 
 
 class WechatCreator(Base):

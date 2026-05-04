@@ -251,3 +251,153 @@ class SubscriptionCrawlStatus(Base):
     last_started_at = Column(DateTime, nullable=True)
     last_finished_at = Column(DateTime, nullable=True)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+
+# ---------------------------------------------------------------------------
+# 7. RecordReviewState — 原始记录人工审核状态
+# ---------------------------------------------------------------------------
+class RecordReviewState(Base):
+    """挂接到任意原始记录的人工审核状态"""
+    __tablename__ = "webui_record_review_state"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    source_table = Column(String(64), nullable=False, index=True)
+    source_record_id = Column(Integer, nullable=False, index=True)
+    manual_review_status = Column(String(20), nullable=False, default="pending")
+    # pending | passed | rejected
+    review_note = Column(Text, default="")
+
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint("source_table", "source_record_id", name="uq_review_state_record"),
+    )
+
+
+# ---------------------------------------------------------------------------
+# 8. StructuredActivityRecord — 大模型结构化结果缓存
+# ---------------------------------------------------------------------------
+class StructuredActivityRecord(Base):
+    """持久化保存大模型产出的活动结构化 JSON 结果"""
+    __tablename__ = "webui_structured_activity_record"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    source_table = Column(String(64), nullable=False, index=True)
+    source_record_id = Column(Integer, nullable=False, index=True)
+    event_index = Column(Integer, nullable=False, default=0)
+
+    source_title = Column(Text, default="")
+    source_link = Column(Text, default="")
+    source_published_at = Column(String(64), default="")
+
+    title = Column(String(255), nullable=True)
+    link = Column(Text, nullable=True)
+    description = Column(Text, nullable=True)
+    core_value = Column(Text, nullable=True)
+    start_time = Column(String(64), nullable=True)
+    end_time = Column(String(64), nullable=True)
+    city = Column(String(64), nullable=True)
+    address = Column(Text, nullable=True)
+    host = Column(String(255), nullable=True)
+    image = Column(Text, nullable=True)
+
+    quality_decision = Column(String(32), default="")
+    quality_score = Column(Integer, nullable=True)
+    quality_reason = Column(Text, default="")
+    manual_review_status = Column(String(20), nullable=False, default="pending")
+    used_fallback = Column(Boolean, default=False)
+
+    raw_event_json = Column(Text, default="")
+    raw_structured_json = Column(Text, default="")
+
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint(
+            "source_table",
+            "source_record_id",
+            "event_index",
+            name="uq_structured_activity_record",
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------
+# 9. StructuredJob + StructuredJobItem — 结构化后台任务
+# ---------------------------------------------------------------------------
+class StructuredJob(Base):
+    """结构化生成任务"""
+    __tablename__ = "webui_structured_job"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    source_table = Column(String(64), nullable=False, index=True)
+    target_table = Column(String(64), nullable=False, default="activities")
+    trigger_type = Column(String(20), nullable=False, default="manual")
+    status = Column(String(20), nullable=False, default="pending", index=True)
+    # pending | running | success | partial_success | failed | cancelled | cancel_requested
+
+    requested_ids = Column(JSON, default=list)
+    total_count = Column(Integer, default=0)
+    processed_count = Column(Integer, default=0)
+    success_count = Column(Integer, default=0)
+    failed_count = Column(Integer, default=0)
+    skipped_count = Column(Integer, default=0)
+
+    current_stage = Column(String(64), default="queued")
+    custom_extract_prompt = Column(Text, nullable=True)
+    custom_quality_prompt = Column(Text, nullable=True)
+    result_summary = Column(JSON, default=dict)
+    error_message = Column(Text, nullable=True)
+    worker_id = Column(String(128), nullable=True, index=True)
+    heartbeat_at = Column(DateTime, nullable=True)
+    lease_until = Column(DateTime, nullable=True, index=True)
+    attempt_count = Column(Integer, default=0)
+    next_run_at = Column(DateTime, nullable=True, index=True)
+    last_error_stage = Column(String(64), nullable=True)
+
+    created_at = Column(DateTime, default=func.now())
+    started_at = Column(DateTime, nullable=True)
+    finished_at = Column(DateTime, nullable=True)
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    items = relationship(
+        "StructuredJobItem",
+        back_populates="job",
+        cascade="all, delete-orphan",
+        order_by="StructuredJobItem.id.asc()",
+    )
+
+
+class StructuredJobItem(Base):
+    """结构化任务中的单条源记录执行项"""
+    __tablename__ = "webui_structured_job_item"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    job_id = Column(
+        Integer, ForeignKey("webui_structured_job.id"), nullable=False, index=True
+    )
+    source_record_id = Column(Integer, nullable=False, index=True)
+    source_title = Column(Text, default="")
+
+    status = Column(String(20), nullable=False, default="pending", index=True)
+    # pending | running | saved | skipped | failed | cancelled
+    current_stage = Column(String(64), default="queued")
+    structured_count = Column(Integer, default=0)
+    quality_score = Column(Integer, nullable=True)
+    quality_decision = Column(String(32), default="")
+    used_fallback = Column(Boolean, default=False)
+    retry_count = Column(Integer, default=0)
+    result_payload = Column(JSON, default=dict)
+    error_message = Column(Text, nullable=True)
+
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    finished_at = Column(DateTime, nullable=True)
+
+    job = relationship("StructuredJob", back_populates="items")
+
+    __table_args__ = (
+        UniqueConstraint("job_id", "source_record_id", name="uq_structured_job_item"),
+    )

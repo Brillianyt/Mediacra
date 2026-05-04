@@ -99,15 +99,18 @@ class XiaoHongShuCrawler(AbstractCrawler):
             # Create a client to interact with the Xiaohongshu website.
             self.xhs_client = await self.create_xhs_client(httpx_proxy_format)
             if not await self.xhs_client.pong():
-                login_obj = XiaoHongShuLogin(
-                    login_type=config.LOGIN_TYPE,
-                    login_phone="",  # input your phone number
-                    browser_context=self.browser_context,
-                    context_page=self.context_page,
-                    cookie_str=config.COOKIES,
-                )
-                await login_obj.begin()
-                await self.xhs_client.update_cookies(browser_context=self.browser_context)
+                if not config.DISABLE_INTERACTIVE_LOGIN:
+                    login_obj = XiaoHongShuLogin(
+                        login_type=config.LOGIN_TYPE,
+                        login_phone="",
+                        browser_context=self.browser_context,
+                        context_page=self.context_page,
+                        cookie_str=config.COOKIES,
+                    )
+                    await login_obj.begin()
+                    await self.xhs_client.update_cookies(browser_context=self.browser_context)
+                else:
+                    utils.logger.info("[XiaoHongShuCrawler] Interactive login disabled, continue without login")
 
             crawler_type_var.set(config.CRAWLER_TYPE)
             if config.CRAWLER_TYPE == "search":
@@ -401,6 +404,7 @@ class XiaoHongShuCrawler(AbstractCrawler):
         """Create Xiaohongshu client"""
         utils.logger.info("[XiaoHongShuCrawler.create_xhs_client] Begin create Xiaohongshu API client ...")
         cookie_str, cookie_dict = utils.convert_cookies(await self.browser_context.cookies())
+        ua = await self.context_page.evaluate("navigator.userAgent")
         xhs_client_obj = XiaoHongShuClient(
             proxy=httpx_proxy,
             headers={
@@ -412,13 +416,10 @@ class XiaoHongShuCrawler(AbstractCrawler):
                 "pragma": "no-cache",
                 "priority": "u=1, i",
                 "referer": "https://www.xiaohongshu.com/",
-                "sec-ch-ua": '"Chromium";v="136", "Google Chrome";v="136", "Not.A/Brand";v="99"',
-                "sec-ch-ua-mobile": "?0",
-                "sec-ch-ua-platform": '"Windows"',
                 "sec-fetch-dest": "empty",
                 "sec-fetch-mode": "cors",
                 "sec-fetch-site": "same-site",
-                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+                "user-agent": ua,
                 "Cookie": cookie_str,
             },
             playwright_page=self.context_page,

@@ -17,10 +17,11 @@
 # 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
 
 import asyncio
-import subprocess
-import signal
 import os
-from typing import Optional, List
+import signal
+import subprocess
+import sys
+from typing import List, Optional
 from datetime import datetime
 from pathlib import Path
 
@@ -90,6 +91,37 @@ class CrawlerManager:
             return "debug"
         return "info"
 
+    def _resolve_python_executable(self) -> str:
+        """Pick a crawler interpreter that is compatible with Playwright/greenlet."""
+        configured = os.getenv("MEDIACRAWLER_PYTHON")
+        if configured and Path(configured).exists():
+            return configured
+
+        project_python = self._project_root / ".venv" / "Scripts" / "python.exe"
+        if project_python.exists():
+            return str(project_python)
+
+        if sys.version_info < (3, 14):
+            return sys.executable
+
+        for version in ("3.11", "3.12", "3.13"):
+            try:
+                result = subprocess.run(
+                    ["py", f"-{version}", "-c", "import sys; print(sys.executable)"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                    cwd=str(self._project_root),
+                )
+            except Exception:
+                continue
+
+            candidate = result.stdout.strip()
+            if candidate and Path(candidate).exists():
+                return candidate
+
+        return sys.executable
+
     async def start(self, config: CrawlerStartRequest) -> bool:
         """Start crawler process"""
         async with self._lock:
@@ -119,6 +151,12 @@ class CrawlerManager:
 
             try:
                 # Start subprocess
+                env = os.environ.copy()
+                env["PYTHONUNBUFFERED"] = "1"
+                env["PLAYWRIGHT_BROWSERS_PATH"] = "0"
+                env["ENABLE_CDP_MODE"] = "true"
+                env["CDP_HEADLESS"] = "true" if config.headless else "false"
+                env["SAVE_LOGIN_STATE"] = "true"
                 self.process = subprocess.Popen(
                     cmd,
                     stdout=subprocess.PIPE,
@@ -127,7 +165,7 @@ class CrawlerManager:
                     encoding='utf-8',
                     bufsize=1,
                     cwd=str(self._project_root),
-                    env={**os.environ, "PYTHONUNBUFFERED": "1"}
+                    env=env
                 )
 
                 self.status = "running"
@@ -204,7 +242,7 @@ class CrawlerManager:
 
     def _build_command(self, config: CrawlerStartRequest) -> list:
         """Build main.py command line arguments"""
-        cmd = ["uv", "run", "python", "main.py"]
+        cmd = [self._resolve_python_executable(), "main.py"]
 
         cmd.extend(["--platform", config.platform.value])
         cmd.extend(["--lt", config.login_type.value])

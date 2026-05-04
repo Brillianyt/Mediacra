@@ -1,0 +1,47 @@
+[
+  {
+    "id": 2,
+    "creator_id": "Mzk5MDgwNDQ1MA==",
+    "creator_name": "FluxVerse 南京",
+    "tags": [],
+    "is_active": true,
+    "auto_crawl": true,
+    "content_count": 0
+  },
+  {
+    "id": 3,
+    "creator_id": "MzkwODY1NjY5Mg==",
+    "creator_name": "AdventureX",
+    "tags": [],
+    "is_active": true,
+    "auto_crawl": true,
+    "content_count": 0
+  },
+  {
+    "id": 4,
+    "creator_id": "Mzk3NTAxNzQ3NQ==",
+    "creator_name": "HackathonWeekly",
+    "tags": [],
+    "is_active": true,
+    "auto_crawl": true,
+    "content_count": 0
+  },
+  {
+    "id": 5,
+    "creator_id": "MzIyNjM2MzQyNg==",
+    "creator_name": "Datawhale",
+    "tags": [],
+    "is_active": true,
+    "auto_crawl": true,
+    "content_count": 0
+  },
+  {
+    "id": 6,
+    "creator_id": "MzU1Mjk3NTU0Mw==",
+    "creator_name": "和鲸",
+    "tags": [],
+    "is_active": true,
+    "auto_crawl": true,
+    "content_count": 0
+  }
+]

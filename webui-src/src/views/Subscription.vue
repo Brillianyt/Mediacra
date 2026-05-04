@@ -174,6 +174,7 @@ const batchCrawling = ref(false)
 
 const checkedRowKeys = ref<number[]>([])
 const crawlStatusMap = ref<Record<number, { status: string; message: string; updated_at: string }>>({})
+const deletingIds = ref<number[]>([])
 let crawlStatusTimer: any = null
 
 const searchPlatform = ref('bili')
@@ -273,7 +274,13 @@ const columns = [
       h(NSpace, { size: 'small' }, () => [
         h(NButton, { size: 'tiny', type: 'primary', onClick: () => triggerCrawl(row.id) }, () => '采集'),
         h(NButton, { size: 'tiny', onClick: () => toggleActive(row) }, () => row.is_active ? '暂停' : '恢复'),
-        h(NButton, { size: 'tiny', type: 'error', onClick: () => deleteSub(row.id) }, () => '删除'),
+        h(NButton, {
+          size: 'tiny',
+          type: 'error',
+          loading: deletingIds.value.includes(row.id),
+          disabled: deletingIds.value.includes(row.id),
+          onClick: () => deleteSub(row.id),
+        }, () => '删除'),
       ]),
   },
 ]
@@ -431,13 +438,20 @@ async function toggleActive(row: any) {
 }
 
 async function deleteSub(id: number) {
+  if (deletingIds.value.includes(id)) return
+  deletingIds.value = [...deletingIds.value, id]
   try {
     await http.delete(`/subscribe/${id}`)
+    const nextStatusMap = { ...crawlStatusMap.value }
+    delete nextStatusMap[id]
+    crawlStatusMap.value = nextStatusMap
     message.success('已取消订阅')
-    loadSubscriptions()
-    loadStats()
+    await loadSubscriptions()
+    await loadStats()
   } catch (e: any) {
     message.error(e.message || '删除失败')
+  } finally {
+    deletingIds.value = deletingIds.value.filter(item => item !== id)
   }
 }
 

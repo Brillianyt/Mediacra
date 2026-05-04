@@ -109,6 +109,10 @@ class WechatDbStoreImplement(AbstractStore):
         # 仅在有内容时更新 content 字段（避免空值覆盖已有内容）
         if item.get("content"):
             update_vals["content"] = item["content"]
+        for key in ("title", "digest", "account_nickname", "author_name", "item_show_type", "create_time_str", "update_time_str", "link"):
+            val = item.get(key)
+            if val not in (None, ""):
+                update_vals[key] = val
         stmt = (
             update(WechatArticle)
             .where(WechatArticle.article_id == item.get("article_id"))

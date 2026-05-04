@@ -1,0 +1,166 @@
+为了方便第三方开发人员进行个性化定制，本网站将其主要功能（包括但不限于公众号查询、历史文章列表查询、文章下载等）提供 API 以供接入。
+
+注意：目前接入 API 免费，后续会根据实际情况动态调整，不排除会改为收费模式。
+
+如果你的调用量比较大的话，推荐进行私有部署。
+
+密钥
+
+以下所有 API 如无特殊说明，均需要携带密钥进行调用。密钥可通过以下两种方式传输：
+
+a. 通过自定义请求头 X-Auth-Key
+
+b. 通过 name 为 auth-key 的 Cookie
+
+调用 API 的密钥与本网站的登录已集成在一起，也就是说，你在该网站扫码登录之后会自动刷新 API 密钥。
+
+由于该密钥与网站用的同一套体系，网站的登录信息失效时，对应的 API 密钥也将失效。
+
+查询 API 密钥 (确保当前登录信息有效)
+1. 根据关键字搜索公众号
+
+简要描述
+
+根据公众号名称或关键字查询公众号列表。
+
+请求URL:
+
+https://down.mptext.top/api/public/v1/account
+
+请求方式:
+
+GET
+
+参数:
+
+参数名	参数位置	强制	默认值	类型	说明	备注
+keyword	query	是	N/A	String	关键字	
+begin	query	否	0	Int	起始索引	下标从0开始，不能为负
+size	query	否	5	Int	返回条数	最大不得超过20
+返回示例:
+
+
+2. 根据文章链接搜索公众号
+
+简要描述
+
+根据公众号文章链接查询公众号。
+
+请求URL:
+
+https://down.mptext.top/api/public/v1/accountbyurl
+
+请求方式:
+
+GET
+
+参数:
+
+参数名	参数位置	强制	默认值	类型	说明	备注
+url	query	是	N/A	String	文章链接	
+返回示例:
+
+
+3. 获取文章列表
+
+简要描述
+
+获取公众号的历史文章列表
+
+请求URL:
+
+https://down.mptext.top/api/public/v1/article
+
+请求方式:
+
+GET
+
+参数:
+
+参数名	参数位置	强制	默认值	类型	说明	备注
+fakeid	query	是	N/A	String	公众号id	
+begin	query	否	0	Int	起始索引	下标从0开始，不能为负
+size	query	否	5	Int	返回消息条数	最大不得超过20，一条消息可能会包含多篇文章
+返回示例:
+
+
+4. 获取文章内容
+
+简要描述
+
+获取文章内容，支持 html / markdown / text / json 格式
+
+备注:
+
+此接口不需要 API 密钥
+
+请求URL:
+
+https://down.mptext.top/api/public/v1/download
+
+请求方式:
+
+GET
+
+参数:
+
+参数名	参数位置	强制	默认值	类型	说明	备注
+url	query	是	N/A	String	文章链接	需经过url编码
+format	query	否	html	String	输出格式	支持 html / markdown / text / json 格式
+返回示例:
+
+
+https://down.mptext.top/api/public/v1/download?url=https://mp.weixin.qq.com/s/tr38EieqyftubIx2FMWUWw&format=html
+
+
+
+5. 查询公众号主体信息 (beta)
+
+简要描述
+
+根据公众号的 fakeid 查询主体信息
+
+备注:
+
+此接口不需要 API 密钥
+
+请求URL:
+
+https://down.mptext.top/api/public/beta/authorinfo
+
+请求方式:
+
+GET
+
+参数:
+
+参数名	参数位置	强制	默认值	类型	说明	备注
+fakeid	query	是	N/A	String	公众号id	
+返回示例:
+
+
+6. 查询公众号主体信息 (beta)
+
+简要描述
+
+根据公众号的 fakeid 查询主体信息
+
+备注:
+
+此接口不需要 API 密钥
+
+请求URL:
+
+https://down.mptext.top/api/public/beta/aboutbiz
+
+请求方式:
+
+GET
+
+参数:
+
+参数名	参数位置	强制	默认值	类型	说明	备注
+fakeid	query	是	N/A	String	公众号id	
+key	query	否	N/A	String	密钥	微信抓包获取的x-wechat-key参数
+返回示例:
+

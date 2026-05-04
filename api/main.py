@@ -29,11 +29,46 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+import starlette.routing as _star_routing
+import fastapi.routing as _fast_routing
+from pathlib import Path
+from typing import Callable
+from starlette.requests import Request
+from starlette.responses import Response
+
+if hasattr(_star_routing, "Router"):
+    _OrigRouter = _star_routing.Router
+    class _CompatRouter(_OrigRouter):  # type: ignore
+        def __init__(self, *args, **kwargs):
+            kwargs.pop("on_startup", None)
+            kwargs.pop("on_shutdown", None)
+            super().__init__(*args, **kwargs)
+    _star_routing.Router = _CompatRouter  # type: ignore
+    _orig_star_init = _OrigRouter.__init__
+    def _compat_star_init(self, *args, **kwargs):
+        kwargs.pop("on_startup", None)
+        kwargs.pop("on_shutdown", None)
+        result = _orig_star_init(self, *args, **kwargs)
+        if not hasattr(self, "on_startup"):
+            self.on_startup = []
+        if not hasattr(self, "on_shutdown"):
+            self.on_shutdown = []
+        if not hasattr(self, "lifespan"):
+            self.lifespan = None
+        return result
+    _OrigRouter.__init__ = _compat_star_init  # type: ignore
+
+_orig_apirouter_init = _fast_routing.APIRouter.__init__
+def _compat_apirouter_init(self, *args, **kwargs):
+    kwargs.pop("on_startup", None)
+    kwargs.pop("on_shutdown", None)
+    return _orig_apirouter_init(self, *args, **kwargs)
+_fast_routing.APIRouter.__init__ = _compat_apirouter_init
 
 from .routers import (
     crawler_router, data_router, websocket_router,
     config_router, subscription_router, field_mapping_router,
-    feishu_router, scheduler_router,
+    feishu_router, scheduler_router, ai_router,
 )
 
 app = FastAPI(
@@ -67,6 +102,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def _no_cache_for_frontend(request: Request, call_next: Callable[..., Response]):
+    resp = await call_next(request)
+    path = request.url.path or ""
+    if path == "/" or path.startswith("/assets/") or path.startswith("/static/"):
+        try:
+            resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            resp.headers["Pragma"] = "no-cache"
+        except Exception:
+            pass
+    return resp
+
 # Register routers — existing
 app.include_router(crawler_router, prefix="/api")
 app.include_router(data_router, prefix="/api")
@@ -78,60 +125,7 @@ app.include_router(subscription_router, prefix="/api")
 app.include_router(field_mapping_router, prefix="/api")
 app.include_router(feishu_router, prefix="/api")
 app.include_router(scheduler_router, prefix="/api")
-
-
-@app.on_event("startup")
-async def webui_startup():
-    """WebUI 首次启动:
-    1. 建表 + 注入默认字段映射方案
-    2. 启动 APScheduler 并恢复全部激活的定时任务
-    """
-    # ── 1. 建表 + 种子数据 ──────────────────────────────────────────
-    try:
-        import config as _cfg
-        from database.db_session import get_session, create_tables
-        from api.services.webui_init import seed_default_mappings
-
-        if _cfg.SAVE_DATA_OPTION not in ("csv", "json"):
-            await create_tables(_cfg.SAVE_DATA_OPTION)
-
-        async with get_session() as session:
-            if session is not None:
-                count = await seed_default_mappings(session)
-                if count > 0:
-                    print(f"[WebUI] Seeded {count} default field mapping schemes")
-    except Exception as e:
-        print(f"[WebUI] Startup seed skipped: {e}")
-
-    # ── 2. 启动 APScheduler + 恢复活跃定时任务 ─────────────────────
-    # P0 FIX: 每次重启后必须重新向 APScheduler 注册数据库中的活跃任务，
-    #         否则任务记录存在于 DB 但实际不会被触发。
-    try:
-        from api.services.scheduler_service import scheduler_service, _get_scheduler
-        from database.db_session import get_session
-        from database.webui_models import ScheduledTask
-        from sqlalchemy import select
-
-        # 确保 APScheduler 已启动
-        _get_scheduler()
-
-        async with get_session() as session:
-            if session is not None:
-                result = await session.execute(
-                    select(ScheduledTask).where(ScheduledTask.is_active == True)  # noqa: E712
-                )
-                active_tasks = result.scalars().all()
-                recovered = 0
-                for task in active_tasks:
-                    try:
-                        scheduler_service._register_job(task)
-                        recovered += 1
-                    except Exception as reg_err:
-                        print(f"[WebUI] Failed to recover task #{task.id} '{task.name}': {reg_err}")
-                if recovered:
-                    print(f"[WebUI] Recovered {recovered} scheduled task(s) from DB")
-    except Exception as e:
-        print(f"[WebUI] APScheduler recovery skipped: {e}")
+app.include_router(ai_router, prefix="/api")
 
 
 @app.get("/")
@@ -139,7 +133,13 @@ async def serve_frontend():
     """Return frontend page"""
     index_path = os.path.join(WEBUI_DIR, "index.html")
     if os.path.exists(index_path):
-        return FileResponse(index_path)
+        resp = FileResponse(index_path)
+        try:
+            resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            resp.headers["Pragma"] = "no-cache"
+        except Exception:
+            pass
+        return resp
     return {
         "message": "MediaCrawler WebUI API",
         "version": "1.0.0",
@@ -147,6 +147,7 @@ async def serve_frontend():
         "note": "WebUI not found, please build it first: cd webui && npm run build"
     }
 
+#
 
 @app.get("/api/health")
 async def health_check():
@@ -320,6 +321,28 @@ if os.path.exists(WEBUI_DIR):
     # Mount other static files (e.g., vite.svg)
     app.mount("/static", StaticFiles(directory=WEBUI_DIR), name="webui-static")
 
+# Mount data directory for serving local media files (read-only)
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+if DATA_DIR.exists():
+    app.mount("/media", StaticFiles(directory=str(DATA_DIR)), name="data-static")
+
+
+@app.get("/{full_path:path}")
+async def serve_frontend_routes(full_path: str):
+    """SPA history fallback for direct access to frontend routes."""
+    if full_path.startswith(("api/", "assets/", "logos/", "static/", "media/")):
+        return Response(status_code=404)
+
+    index_path = os.path.join(WEBUI_DIR, "index.html")
+    if os.path.exists(index_path):
+        resp = FileResponse(index_path)
+        try:
+            resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            resp.headers["Pragma"] = "no-cache"
+        except Exception:
+            pass
+        return resp
+    return Response(status_code=404)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8080)
