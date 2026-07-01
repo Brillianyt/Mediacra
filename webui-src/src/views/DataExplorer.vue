@@ -187,7 +187,7 @@ const selectedPromptId = ref<number | null>(null)
 const promptName = ref('')
 const promptOptions = computed(() => promptPresets.value.map(p => ({ label: p.name, value: p.id })))
 const LS_KEY = 'mc_prompt_presets'
-type MappingItem = { source_field: string; display_name: string; enabled: boolean; sort_order: number; feishu_type?: string }
+type MappingItem = { source_field: string; display_name: string; enabled: boolean; sort_order: number; display_type?: string }
 const mappingItems = ref<MappingItem[]>([])
 const mappingSchemes = ref<any[]>([])
 const selectedMappingSchemeId = ref<number | null>(null)
@@ -217,17 +217,17 @@ async function loadMappingSchemes() {
     } else {
       if (p.platform === 'wechat' && p.data_type === 'article') {
         mappingItems.value = [
-          { source_field: 'article_id', display_name: '文章ID', enabled: true, sort_order: 1, feishu_type: 'text' },
-          { source_field: 'title', display_name: '标题', enabled: true, sort_order: 2, feishu_type: 'text' },
-          { source_field: 'digest', display_name: '内容摘要', enabled: true, sort_order: 3, feishu_type: 'text' },
-          { source_field: 'account_nickname', display_name: '公众号名称', enabled: true, sort_order: 4, feishu_type: 'text' },
-          { source_field: 'author_name', display_name: '作者', enabled: true, sort_order: 5, feishu_type: 'text' },
-          { source_field: 'item_show_type', display_name: '类型', enabled: true, sort_order: 6, feishu_type: 'single_select' },
-          { source_field: 'create_time_str', display_name: '发布时间', enabled: true, sort_order: 7, feishu_type: 'text' },
-          { source_field: 'link', display_name: '文章链接', enabled: true, sort_order: 8, feishu_type: 'url' },
-          { source_field: 'image_list', display_name: '图片', enabled: true, sort_order: 9, feishu_type: 'attachment' },
-          { source_field: 'fakeid', display_name: '公众号ID', enabled: false, sort_order: 10, feishu_type: 'text' },
-          { source_field: 'source_keyword', display_name: '来源关键词', enabled: false, sort_order: 11, feishu_type: 'text' },
+          { source_field: 'article_id', display_name: '文章ID', enabled: true, sort_order: 1, display_type: 'text' },
+          { source_field: 'title', display_name: '标题', enabled: true, sort_order: 2, display_type: 'text' },
+          { source_field: 'digest', display_name: '内容摘要', enabled: true, sort_order: 3, display_type: 'text' },
+          { source_field: 'account_nickname', display_name: '公众号名称', enabled: true, sort_order: 4, display_type: 'text' },
+          { source_field: 'author_name', display_name: '作者', enabled: true, sort_order: 5, display_type: 'text' },
+          { source_field: 'item_show_type', display_name: '类型', enabled: true, sort_order: 6, display_type: 'single_select' },
+          { source_field: 'create_time_str', display_name: '发布时间', enabled: true, sort_order: 7, display_type: 'text' },
+          { source_field: 'link', display_name: '文章链接', enabled: true, sort_order: 8, display_type: 'url' },
+          { source_field: 'image_list', display_name: '图片', enabled: true, sort_order: 9, display_type: 'attachment' },
+          { source_field: 'fakeid', display_name: '公众号ID', enabled: false, sort_order: 10, display_type: 'text' },
+          { source_field: 'source_keyword', display_name: '来源关键词', enabled: false, sort_order: 11, display_type: 'text' },
         ]
       }
     }
@@ -347,7 +347,7 @@ const recordColumns = computed<DataTableColumn[]>(() => {
       const key = it.source_field
       const title = it.display_name || key
       const base: any = { title, key, width: 140, ellipsis: { tooltip: true } }
-      const type = (it.feishu_type || '').toLowerCase()
+      const type = (it.display_type || '').toLowerCase()
       if (type === 'url') {
         base.width = 180
         base.render = (row: any) => {

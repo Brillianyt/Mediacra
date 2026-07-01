@@ -4,23 +4,7 @@
 from typing import Dict, List, Set
 
 CONFIG_GROUPS: List[dict] = [
-    {
-        "key": "feishu",
-        "label": "飞书配置",
-        "icon": "feishu",
-        "fields": [
-            {"key": "FEISHU_APP_ID", "label": "App ID", "type": "text", "required": True,
-             "help": "飞书开放平台应用 ID", "sensitive": False},
-            {"key": "FEISHU_APP_SECRET", "label": "App Secret", "type": "password", "required": True,
-             "help": "飞书开放平台应用密钥", "sensitive": True},
-            {"key": "FEISHU_BITABLE_APP_TOKEN", "label": "多维表格 App Token", "type": "text",
-             "help": "飞书多维表格 App Token"},
-            {"key": "FEISHU_TABLE_ID", "label": "数据表 ID", "type": "text",
-             "help": "可选，不填时自动创建"},
-            {"key": "FEISHU_BATCH_SIZE", "label": "批量写入条数", "type": "number",
-             "help": "每次写入飞书的记录数（默认 500）"},
-        ],
-    },
+    # 飞书配置组已移除 (DEPRECATED)
     {
         "key": "database",
         "label": "数据库配置",

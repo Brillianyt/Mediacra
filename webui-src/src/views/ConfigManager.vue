@@ -81,7 +81,7 @@ const historyPage = ref(1)
 const historyPageCount = ref(1)
 
 // Groups that support "test connection"
-const testableGroups = ['feishu', 'database', 'wechat']
+const testableGroups = ['database', 'wechat']
 
 /** 将后端字符串值转为前端组件需要的类型 */
 function coerceValue(field: any, raw: string): any {

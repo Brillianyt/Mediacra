@@ -68,7 +68,7 @@ _fast_routing.APIRouter.__init__ = _compat_apirouter_init
 from .routers import (
     crawler_router, data_router, websocket_router,
     config_router, subscription_router, field_mapping_router,
-    feishu_router, scheduler_router, ai_router,
+    scheduler_router, ai_router,
 )
 
 app = FastAPI(
@@ -123,7 +123,7 @@ app.include_router(websocket_router, prefix="/api")
 app.include_router(config_router, prefix="/api")
 app.include_router(subscription_router, prefix="/api")
 app.include_router(field_mapping_router, prefix="/api")
-app.include_router(feishu_router, prefix="/api")
+# app.include_router(feishu_router, prefix="/api")  # DEPRECATED
 app.include_router(scheduler_router, prefix="/api")
 app.include_router(ai_router, prefix="/api")
 

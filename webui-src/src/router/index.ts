@@ -58,12 +58,6 @@ const router = createRouter({
           meta: { title: '字段映射', icon: 'SwapHorizontalOutline' },
         },
         {
-          path: 'feishu',
-          name: 'FeishuSync',
-          component: () => import('@/views/FeishuSync.vue'),
-          meta: { title: '飞书同步', icon: 'CloudUploadOutline' },
-        },
-        {
           path: 'scheduler',
           name: 'TaskScheduler',
           component: () => import('@/views/TaskScheduler.vue'),

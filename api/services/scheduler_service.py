@@ -469,34 +469,9 @@ class SchedulerService:
                     if s.get("status") != "running":
                         break
 
-            if not _pipeline_mode and task_type in ("sync", "combo", "subscription_combo"):
-                # 调用飞书同步
-                from api.services.feishu_service import feishu_service
-                from database.db_session import get_session
-
-                async with get_session() as session:
-                    if session:
-                        data_type = task_config.get(
-                            "data_type",
-                            "article" if platform == "wechat" else "note",
-                        )
-                        history = await feishu_service.start_sync(session, {
-                            "platform": platform,
-                            "data_type": data_type,
-                            "trigger_type": "scheduled",
-                            "task_execution_id": execution_id,
-                        })
-                        await session.commit()
-
-                        await SchedulerService.append_execution_log(
-                            execution_id,
-                            f"feishu sync triggered history_id={getattr(history, 'id', None)}",
-                        )
-
-                        result_summary.update({
-                            "sync_history_id": getattr(history, "id", None),
-                            "sync_data_type": data_type,
-                        })
+            # 飞书同步已移除 (DEPRECATED)
+            # 原 if not _pipeline_mode and task_type in ("sync", "combo", "subscription_combo"):
+            # 调用 feishu_service 的逻辑已被移除
 
         except Exception as e:
             if SchedulerService._is_aborted(execution_id):

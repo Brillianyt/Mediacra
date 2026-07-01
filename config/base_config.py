@@ -150,5 +150,5 @@ from .weibo_config import *
 from .tieba_config import *
 from .zhihu_config import *
 from .wechat_config import *
-from .feishu_config import *
- 
+# from .feishu_config import *  # DEPRECATED
+

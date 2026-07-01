@@ -58,7 +58,6 @@ import {
   GridOutline,
   LayersOutline,
   SwapHorizontalOutline,
-  CloudUploadOutline,
   TimerOutline,
   TerminalOutline,
 } from '@vicons/ionicons5'
@@ -87,7 +86,7 @@ const menuOptions: MenuOption[] = [
   { label: '结构化数据', key: 'StructuredData', icon: renderIcon(LayersOutline) },
   { label: '任务中心', key: 'TaskCenter', icon: renderIcon(ListOutline) },
   { label: '字段映射', key: 'FieldMapping', icon: renderIcon(SwapHorizontalOutline) },
-  { label: '飞书同步', key: 'FeishuSync', icon: renderIcon(CloudUploadOutline) },
+  // { label: '飞书同步', key: 'FeishuSync', icon: renderIcon(CloudUploadOutline) },  // DEPRECATED
   { label: '任务调度', key: 'TaskScheduler', icon: renderIcon(TimerOutline) },
   { label: '日志监控', key: 'Logs', icon: renderIcon(TerminalOutline) },
 ]

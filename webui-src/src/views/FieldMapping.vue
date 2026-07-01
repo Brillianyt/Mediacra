@@ -189,10 +189,7 @@ const itemColumns: DataTableColumn[] = [
     title: '转换', key: 'transform', width: 150,
     render: (row: any, idx: number) => h(NSelect, { value: row.transform, size: 'small', options: transformOptions, onUpdateValue: (v: string) => { editItems.value[idx].transform = v } }),
   },
-  {
-    title: '飞书类型', key: 'feishu_type', width: 100,
-    render: (row: any, idx: number) => h(NInput, { value: row.feishu_type, size: 'small', onUpdateValue: (v: string) => { editItems.value[idx].feishu_type = v } }),
-  },
+  // 飞书类型列已移除 (DEPRECATED)
   { title: '排序', key: 'sort_order', width: 60, render: (row: any) => row.sort_order },
   {
     title: '', key: 'del', width: 40,
@@ -204,7 +201,7 @@ const detailColumns: DataTableColumn[] = [
   { title: '源字段', key: 'source_field', width: 160, ellipsis: { tooltip: true } },
   { title: '显示名', key: 'display_name', width: 140, ellipsis: { tooltip: true } },
   { title: '转换', key: 'transform', width: 120 },
-  { title: '飞书类型', key: 'feishu_type', width: 100 },
+  // { title: '飞书类型', key: 'feishu_type', width: 100 },  // DEPRECATED
   { title: '原值', key: 'raw_value', ellipsis: { tooltip: true } },
   { title: '转换后', key: 'transformed_value', ellipsis: { tooltip: true } },
 ]
@@ -235,7 +232,7 @@ async function openSchemeDetail(id: number) {
       display_name: item.display_name,
       transform: item.transform || 'none',
       transform_config: item.transform_config || {},
-      feishu_type: item.feishu_type || '1',
+      // feishu_type 已移除 (DEPRECATED)
       enabled: item.enabled !== false,
       sort_order: item.sort_order ?? idx,
     }))
@@ -286,7 +283,7 @@ function addItem() {
     display_name: '',
     transform: 'none',
     transform_config: {},
-    feishu_type: '1',
+    // feishu_type 已移除 (DEPRECATED)
     enabled: true,
     sort_order: editItems.value.length,
   })

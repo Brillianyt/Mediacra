@@ -70,7 +70,7 @@
             <n-button block type="primary" @click="$router.push({ name: 'ConfigManager' })">系统配置</n-button>
             <n-button block @click="$router.push({ name: 'Subscription' })">管理订阅</n-button>
             <n-button block @click="$router.push({ name: 'DataExplorer' })">浏览数据</n-button>
-            <n-button block @click="$router.push({ name: 'FeishuSync' })">同步飞书</n-button>
+            <!-- 飞书同步按钮已移除 (DEPRECATED) -->
           </n-space>
         </n-card>
       </n-gi>

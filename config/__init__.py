@@ -57,7 +57,8 @@ def reload_from_env():
     for _mod_name in [
         "wechat_config", "xhs_config", "bilibili_config",
         "dy_config", "ks_config", "weibo_config",
-        "tieba_config", "zhihu_config", "feishu_config",
+        "tieba_config", "zhihu_config",
+        # "feishu_config",  # DEPRECATED
     ]:
         try:
             _mod = importlib.import_module(f"config.{_mod_name}")

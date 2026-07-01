@@ -117,18 +117,8 @@ async def update_configs(
 
 @router.post("/test")
 async def test_connection(body: dict):
-    """测试连接（飞书 / 数据库 / 微信源）"""
+    """测试连接（数据库 / 微信源）"""
     conn_type = body.get("type", "")
-    if conn_type == "feishu":
-        from api.services.feishu_service import feishu_service
-        result = await feishu_service.check_connection()
-        # 兼容历史 key: FEISHU_APP_TOKEN
-        if not result.get("has_bitable_token"):
-            env = config_service._read_env_file()
-            if env.get("FEISHU_APP_TOKEN"):
-                result["has_bitable_token"] = True
-        return ok({"success": result.get("connected", False), **result})
-
     if conn_type == "database":
         try:
             from database.db_session import get_async_engine

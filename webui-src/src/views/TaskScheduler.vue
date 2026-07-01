@@ -129,60 +129,7 @@
           </n-form>
         </template>
 
-        <!-- feishu_push 配置 -->
-        <template v-if="step.step === 'feishu_push'">
-          <n-form label-placement="left" label-width="100" size="small">
-            <n-form-item label="数据类型">
-              <n-select v-model:value="step.data_type" :options="dataTypeOptions" style="width:140px" />
-            </n-form-item>
-            <n-form-item label="目标表 ID">
-              <n-input v-model:value="step.table_id" placeholder="tblXXXXXXX（不填读环境变量）" />
-            </n-form-item>
-          </n-form>
-        </template>
-
-        <!-- feishu_pull 配置 -->
-        <template v-if="step.step === 'feishu_pull'">
-          <n-form label-placement="left" label-width="100" size="small">
-            <n-form-item label="来源表 ID" required>
-              <n-input v-model:value="step.table_id" placeholder="tblXXXXXXX" />
-            </n-form-item>
-            <n-form-item label="过滤字段">
-              <n-input v-model:value="step.filter_field" placeholder="例: 信息质量评估" />
-            </n-form-item>
-            <n-form-item label="过滤运算">
-              <n-select v-model:value="step.filter_operator" :options="filterOps" style="width:140px" />
-            </n-form-item>
-            <n-form-item label="过滤值">
-              <n-dynamic-tags v-model:value="step.filter_values" />
-            </n-form-item>
-            <n-form-item label="视图 ID">
-              <n-input v-model:value="step.view_id" placeholder="可空" />
-            </n-form-item>
-          </n-form>
-        </template>
-
-        <!-- feishu_push_json 配置 -->
-        <template v-if="step.step === 'feishu_push_json'">
-          <n-form label-placement="left" label-width="100" size="small">
-            <n-form-item label="目标表 ID" required>
-              <n-input v-model:value="step.table_id" placeholder="tblYYYYYYY" />
-            </n-form-item>
-            <n-form-item label="JSON 列名" required>
-              <n-input v-model:value="step.json_columns" placeholder="例: AI文本分析" />
-            </n-form-item>
-            <n-form-item label="主键列">
-              <n-input v-model:value="step.json_primary" placeholder="默认: 记录ID" />
-            </n-form-item>
-            <n-form-item label="范围">
-              <n-space>
-                <n-input-number v-model:value="step.range_start" :min="1" placeholder="起始" style="width:100px" />
-                <span>~</span>
-                <n-input-number v-model:value="step.range_end" :min="1" placeholder="结束" style="width:100px" />
-              </n-space>
-            </n-form-item>
-          </n-form>
-        </template>
+        <!-- feishu 步骤配置已移除 (DEPRECATED) -->
       </div>
 
       <n-button dashed block size="small" @click="addStep">+ 添加步骤</n-button>
@@ -240,9 +187,7 @@ const taskTypeOptions = [
 const availableStepOptions = [
   { label: '订阅采集', value: 'subscription_crawl' },
   { label: '通用采集', value: 'crawl' },
-  { label: '同步到飞书表', value: 'feishu_push' },
-  { label: '从飞书表拉取', value: 'feishu_pull' },
-  { label: 'JSON展开推送', value: 'feishu_push_json' },
+  // feishu_push / feishu_pull / feishu_push_json 已移除 (DEPRECATED)
 ]
 
 const crawlerTypeOptions = [
@@ -251,19 +196,7 @@ const crawlerTypeOptions = [
   { label: '详情', value: 'detail' },
 ]
 
-const dataTypeOptions = [
-  { label: '文章 (article)', value: 'article' },
-  { label: '创作者 (creator)', value: 'creator' },
-  { label: '笔记 (note)', value: 'note' },
-]
-
-const filterOps = [
-  { label: 'contains', value: 'contains' },
-  { label: 'is', value: 'is' },
-  { label: 'isNot', value: 'isNot' },
-  { label: 'isEmpty', value: 'isEmpty' },
-  { label: 'isNotEmpty', value: 'isNotEmpty' },
-]
+// dataTypeOptions / filterOps 已移除 (feishu 步骤关联，DEPRECATED)
 
 const platformOptions = [
   { label: '微信', value: 'wechat' },
@@ -298,12 +231,7 @@ function createDefaultStep(stepType: string, platform?: string): any {
       return { step: 'subscription_crawl', platform: p, limit: 0, timeout_seconds: 3600 }
     case 'crawl':
       return { step: 'crawl', platform: p, crawler_type: 'search', keywords: '', creator_ids: '', timeout_seconds: 1800 }
-    case 'feishu_push':
-      return { step: 'feishu_push', platform: p, data_type: p === 'wechat' ? 'article' : 'note', table_id: '' }
-    case 'feishu_pull':
-      return { step: 'feishu_pull', platform: p, table_id: '', filter_field: '', filter_operator: 'contains', filter_values: [], view_id: '', output: 'step3_csv' }
-    case 'feishu_push_json':
-      return { step: 'feishu_push_json', input: 'step3_csv', table_id: '', json_columns: '', json_primary: '记录ID', range_start: null, range_end: null }
+    // feishu_push / feishu_pull / feishu_push_json 已移除 (DEPRECATED)
     default:
       return { step: stepType }
   }
@@ -317,13 +245,12 @@ function getDefaultPipeline(taskType: string, platform?: string): any[] {
     case 'crawl':
       return [createDefaultStep('crawl', p)]
     case 'sync':
-      return [createDefaultStep('feishu_push', p)]
+      // feishu_push 已移除 (DEPRECATED); 回退到默认 crawl
+      return [createDefaultStep('subscription_crawl', p)]
     case 'subscription_combo':
+      // feishu_push / feishu_pull / feishu_push_json 已移除 (DEPRECATED)
       return [
         createDefaultStep('subscription_crawl', p),
-        createDefaultStep('feishu_push', p),
-        createDefaultStep('feishu_pull', p),
-        createDefaultStep('feishu_push_json', p),
       ]
     default:
       return [createDefaultStep('subscription_crawl', p)]
@@ -334,9 +261,7 @@ function stepTagType(stepType: string): string {
   const m: Record<string, string> = {
     subscription_crawl: 'info',
     crawl: 'info',
-    feishu_push: 'success',
-    feishu_pull: 'warning',
-    feishu_push_json: 'error',
+    // feishu_push / feishu_pull / feishu_push_json 已移除 (DEPRECATED)
   }
   return (m[stepType] || 'default') as any
 }
@@ -344,7 +269,7 @@ function stepTagType(stepType: string): string {
 // ─── 步骤操作 ────────────────────────────────────────────────────────────────
 
 function addStep() {
-  pipelineSteps.value.push(createDefaultStep('feishu_push'))
+  pipelineSteps.value.push(createDefaultStep('crawl'))
 }
 
 function removeStep(idx: number) {
@@ -401,28 +326,7 @@ function buildTaskConfig(): any {
       if (s.creator_ids) clean.creator_ids = s.creator_ids
       if (s.timeout_seconds && s.timeout_seconds !== 1800) clean.timeout_seconds = s.timeout_seconds
     }
-    if (s.step === 'feishu_push') {
-      if (s.data_type) clean.data_type = s.data_type
-      if (s.table_id) clean.table_id = s.table_id
-    }
-    if (s.step === 'feishu_pull') {
-      if (s.table_id) clean.table_id = s.table_id
-      if (s.filter_field && s.filter_values?.length) {
-        clean.filter_field = s.filter_field
-        clean.filter_operator = s.filter_operator
-        clean.filter_values = s.filter_values
-      }
-      if (s.view_id) clean.view_id = s.view_id
-      if (s.output) clean.output = s.output
-    }
-    if (s.step === 'feishu_push_json') {
-      if (s.input) clean.input = s.input
-      if (s.table_id) clean.table_id = s.table_id
-      if (s.json_columns) clean.json_columns = s.json_columns
-      if (s.json_primary) clean.json_primary = s.json_primary
-      if (s.range_start) clean.range_start = s.range_start
-      if (s.range_end) clean.range_end = s.range_end
-    }
+    // feishu_push / feishu_pull / feishu_push_json 已移除 (DEPRECATED)
     return clean
   })
   return { pipeline: steps }
